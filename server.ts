@@ -19,10 +19,7 @@ type Account = {
 
 // クエリを実行
 const initialize = async () => {
-    db.run('CREATE TABLE IF NOT EXISTS accounts (id INT, name TEXT, mail TEXT, password TEXT)');
-
-    // データベースを閉じる
-    // db.close();
+    await db.run('CREATE TABLE IF NOT EXISTS accounts (id INT, name TEXT, mail TEXT, password TEXT)');
 };
 
 initialize();
@@ -30,17 +27,15 @@ initialize();
 
 
 const insert = async (req: Request, res: Response) => {
-    db.run('INSERT INTO accounts (id, name, mail, password) VALUES (?, ?, ?, ?)', [1, req.body.name, req.body.mail, req.body.password]);
+    await db.run('INSERT INTO accounts (id, name, mail, password) VALUES (?, ?, ?, ?)', [1, req.body.name, req.body.mail, req.body.password]);
  
     res.sendFile(__dirname + "/signuped.html");
-    // データベースを閉じる
-    // db.close();
 };
   
 const select = async (req: Request, res: Response) => {
  
- //   // クエリの結果を取得
-    db.all('SELECT * FROM accounts', (err, rows) => {
+    // クエリの結果を取得
+    await db.all('SELECT * FROM accounts', (err, rows) => {
         if (err) {
             console.error(err.message);
         } else {
@@ -50,7 +45,6 @@ const select = async (req: Request, res: Response) => {
                 if (account.mail == req.body.mail && account.password == req.body.password) {
                     flag = true;
                     res.sendFile(__dirname + "/index.html");
-//                    res.json({result: "success"});
                     break;
                 }
             }
@@ -59,14 +53,7 @@ const select = async (req: Request, res: Response) => {
             }
         }
     });
-  
-    // データベースを閉じる
-    // db.close();
 };
-
-
-
-
 
 app.get("/", (req: Request, res: Response) => {
     res.sendFile(__dirname + "/login.html");
