@@ -27,9 +27,32 @@ initialize();
 
 
 const insert = async (req: Request, res: Response) => {
-    await db.run('INSERT INTO accounts (name, mail, password) VALUES (?, ?, ?)', [req.body.name, req.body.mail, req.body.password]);
- 
-    res.sendFile(__dirname + "/signuped.html");
+    // クエリの結果を取得
+    await db.all('SELECT * FROM accounts WHERE mail = ?', [req.body.mail], async (err, rows) => {
+        if (err) {
+            console.error(err.message);
+        } else {
+            let flag: boolean = false;
+            for (const row of rows) {
+                const account = row as Account
+                if (account.mail == req.body.mail) {
+                    flag = true;
+                    console.log("id:" + account.id);
+                    console.log("mail:" + account.mail);
+                    console.log("name:" + account.name);
+                    res.sendFile(__dirname + "/signuperror.html");
+                    break;
+                }
+            }
+            if (flag == false) {    
+                await db.run('INSERT INTO accounts (name, mail, password) VALUES (?, ?, ?)', [req.body.name, req.body.mail, req.body.password]);
+            
+                res.sendFile(__dirname + "/signuped.html");
+            }
+        
+        }
+    });
+
 };
   
 const select = async (req: Request, res: Response) => {
