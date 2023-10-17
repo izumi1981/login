@@ -19,7 +19,7 @@ type Account = {
 
 // クエリを実行
 const initialize = async () => {
-    await db.run('CREATE TABLE IF NOT EXISTS accounts (id INT, name TEXT, mail TEXT, password TEXT)');
+    await db.run('CREATE TABLE IF NOT EXISTS accounts (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, mail TEXT, password TEXT)');
 };
 
 initialize();
@@ -27,7 +27,7 @@ initialize();
 
 
 const insert = async (req: Request, res: Response) => {
-    await db.run('INSERT INTO accounts (id, name, mail, password) VALUES (?, ?, ?, ?)', [1, req.body.name, req.body.mail, req.body.password]);
+    await db.run('INSERT INTO accounts (name, mail, password) VALUES (?, ?, ?)', [req.body.name, req.body.mail, req.body.password]);
  
     res.sendFile(__dirname + "/signuped.html");
 };
@@ -44,6 +44,8 @@ const select = async (req: Request, res: Response) => {
                 const account = row as Account
                 if (account.mail == req.body.mail && account.password == req.body.password) {
                     flag = true;
+                    console.log("id:" + account.id);
+                    console.log("name:" + account.name);
                     res.sendFile(__dirname + "/index.html");
                     break;
                 }
